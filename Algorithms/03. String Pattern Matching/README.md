@@ -2,7 +2,7 @@
 
 In the field of computer science, string searching algorithms are algorithms that try to find a place where one or patterns are found within a larger string or text. The importance of finding a pattern matching exists in almost every application that involves text such as Notepad to Mobile messengers and many more.
 
-## Comparison b/w sorting algorithms
+## Comparison b/w string searching algorithms
 
 | Name | Time complexity (Best) | Time complexity (Worst) | Preprocessing Time |
 | --- | --- | --- | --- |
