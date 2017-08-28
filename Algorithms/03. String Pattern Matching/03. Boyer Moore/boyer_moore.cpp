@@ -1,4 +1,5 @@
 #include<iostream>
+#include<algorithm>
 using namespace std;
 
 // This class is used to check if pattern exists in a string
@@ -14,38 +15,47 @@ class Pair {
 		}
 };
 
-/* function::NaivePatternMatching(string, pattern) */
-Pair NaivePatternMatching (std::string str, std::string pattern) {
+/* function::BoyerMoore(string, pattern) */
+Pair BoyerMoore (std::string str, std::string pattern) {
 	Pair result;
 	
-	// iterate over the strings until pattern iterates over every match on the string
-	for (int i=0; i<=str.size()-pattern.size(); i++) {
-		// check if pattern exist
-		int j=0, k=i;
-		while (str[k]==pattern[j]) {
-			k++;
-			j++;
+	// bad character heuristic 
+	int badChar['z'-'A'];
+	for (int i=0; i<'z'-'A'; i++) badChar[i] = -1;
+	for (int i=0; i<pattern.length(); i++) 
+		badChar[pattern[i]-'z'] = i;
+		
+	int i = 0;
+	// iterate over the complete string
+	while (i <= str.length()-pattern.length()) {
+		int j = pattern.length()-1;
+		
+		// if character at pattern index matches character at string index
+		while (j>=0 && pattern[j]==str[i+j]) {
+			j--;
 			result.comparison++;
-			
-			// if j has reached its length; therefore pattern exists
-			if (j==pattern.size()) {
-				// set exists to true; since pattern exists in string
-				result.exists = true;
-				
-				// print where pattern occurs in a string
-				std::cout << "Pattern exists at index: " << k-j << std::endl;
-				std::cout << str << std::endl;
-				for (int l=1; l<=k-j; l++) cout << " ";
-				std::cout << pattern << std::endl << std::endl;
-			}
 		}
 		
-		if (j<pattern.length()) result.comparison++;
+		// if pattern exists
+		if (j < 0) {
+			result.exists = true;
+			
+			// print where pattern occurs in a string
+			std::cout << "Pattern exists at index: " << i-j-1 << std::endl;
+			std::cout << str << std::endl;
+			for (int k=1; k<i-j; k++) cout << " ";
+			std::cout << pattern << std::endl << std::endl;
+				
+			i += (i+str.length() < pattern.length()? pattern.length()-badChar[str[i+pattern.length()]-'z'] : 1);
+		} else { // if pattern doesn't exist
+			result.comparison++;
+			i += max(1, j-badChar[str[i+j]-'z']);	
+		}
 	}
 	
-	// return exists
+	// return result after iterating over complete string
 	return result;
-} // #EndOfNaivePatternMatching!
+} // #EndOfBoyerMoore!
 
 /* function::main() */
 int main ( ) {
@@ -64,8 +74,8 @@ int main ( ) {
 		std::cout << "Pattern: " << pattern << std::endl;
 		std::cout << "String: " << str << std::endl << std::endl;
 		
-		// Naive Pattern Matching function call
-		Pair result = NaivePatternMatching(str, pattern);
+		// Boyer Moore function call
+		Pair result = BoyerMoore(str, pattern);
 		
 		// print total number of comparisons
 		std::cout << "Total Comparisons: " << result.comparison << std::endl;
